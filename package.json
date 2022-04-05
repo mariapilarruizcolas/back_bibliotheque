@@ -1,0 +1,29 @@
+{
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "mysql2": "^2.3.3"
+  },
+  "name": "back",
+  "description": "",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mariapilarruizcolas/bibliotheque_back.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mariapilarruizcolas/bibliotheque_back/issues"
+  },
+  "homepage": "https://github.com/mariapilarruizcolas/bibliotheque_back#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
