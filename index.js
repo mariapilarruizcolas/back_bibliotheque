@@ -26,10 +26,10 @@ app.get('/api/books', (req, res) => {
     });
   });
   app.post('/api/books', (req, res) => {
-    const { title, author, is_free} = req.body;
+    const { title, author, img, resum, theme,  isfree} = req.body;
     connection.query(
-      'INSERT INTO books (title, author, is_free) VALUES (?, ?, ?)',
-      [title, author, is_free],
+      'INSERT INTO books (title, author, img, resum, theme,  isfree) VALUES (?,?,?,?,?,?)',
+      [title, author, img, resum, theme,  isfree],
       (err, result) => {
         if (err) {
           res.status(500).send('Error saving the book');
@@ -70,10 +70,11 @@ app.get('/api/books', (req, res) => {
     });
   });
   app.post('/api/users', (req, res) => {
-    const { firstname, lastname, birthday, address, city, package} = req.body;
+    //firstname, lastname, birthday, address, city, package, email, only_read
+    const { firstname, lastname, birthday, address, city, package, email, only_read} = req.body;
     connection.query(
-      'INSERT INTO users (firstname, lastname, birthday, address, city, package) VALUES (?, ?, ?, ?,?,?)',
-      [firstname, lastname, birthday, address, city, package],
+      'INSERT INTO users (firstname, lastname, birthday, address, city, package, email, only_read) VALUES (?, ?, ?, ?,?,?,?,?)',
+      [firstname, lastname, birthday, address, city, package, email, only_read],
       (err, result) => {
         if (err) {
           res.status(500).send('Error saving the users');
@@ -114,10 +115,10 @@ app.get('/api/borrowing', (req, res) => {
   });
 });
 app.post('/api/borrowing', (req, res) => {
-  const { users_id, books_id, deadline_date} = req.body;
+  const { usersId, booksId, deadlineDate, isRendered} = req.body;
   connection.query(
-    'INSERT INTO borrowing ( users_id, books_id, deadline_date) VALUES (?, ?, ?)',
-    [ users_id, books_id, deadline_date],
+    'INSERT INTO borrowing ( usersId, booksId, deadlineDate, isRendered) VALUES (?, ?, ?, ?)',
+    [ usersId, booksId, deadlineDate, isRendered],
     (err, result) => {
       if (err) {
         res.status(500).send('Error saving the borrowing');
