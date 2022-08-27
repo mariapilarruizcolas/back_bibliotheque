@@ -50,11 +50,31 @@ borrowingRouter.post('/', (req, res) => {
             res.status(201).json(createdBorrowing);
         })
         .catch((err) => {
-            console.error(err);
+
             res.status(500).send('Error saving the borrowing');
         });
 }
-    //}
+    //}()
 );
+//Delete a borrowing
+borrowingRouter.delete('/:id', (req, res) => {
+    let existingBorrowing = null;
+    Borrowing.getBorrowingByBookId(req.params.id)
+        .then((borrowing) => {
+            existingBorrowing = borrowing;
+            if (!existingBorrowing) return Promise.reject('RECORD_NOT_FOUND');
+            // else res.status(200).json(borrowing);
+            else return Borrowing.destroy(req.params.id)
+        })
+        .then((deleted) => {
+            if (deleted) res.status(200).send('🎉 Livre rendu avec succès!');
+            else res.status(404).send('Livre non trouvé');
+
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).send('Error deleting a borrowing');
+        });
+});
 
 module.exports = borrowingRouter;

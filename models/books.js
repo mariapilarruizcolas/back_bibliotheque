@@ -35,7 +35,7 @@ const addingOneBook = ({ title, author, isFree }) => {
         [title, author, isFree])
         .then(([result]) => {
             const bookId = result.insertId;
-            return { title, author, isFree, bookd };
+            return { title, author, isFree, bookId };
         });
 };
 
