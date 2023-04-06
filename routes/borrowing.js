@@ -101,14 +101,19 @@ borrowingRouter.post("/", (req, res) => {
   console.log(req.body);
   const error = Borrowing.validateBorrowing(req.body);
   if (error) {
-    res.status(422).send({ validationErrors: error.details });
+    res.status(422).send("Erreur de validation des données");
   } else {
     Borrowing.createOneBorrowing(req.body)
       .then((createdBorrowing) => {
         let boorrowingBookId = createdBorrowing.bookId;
         console.log("Livre numéro ", createdBorrowing.bookId);
+        //On met le livre non disponible
         Borrowing.borrowingBook(boorrowingBookId).then((borrowingCreated) => {
-          res.status(201).send("🎉 Livre emprunté avec success");
+          res
+            .status(201)
+            .send(
+              `🎉 Livre emprunté avec succès. Vous devez le rendre au plus tard le ${deadlineDate}`
+            );
         });
       })
       .catch((err) => {

@@ -21,13 +21,12 @@ booksRouter.get("/", (req, res) => {
 
 //Get by BookId MARCHE
 booksRouter.get("/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  if (isNaN(id)) {
+  if (isNaN(req.params.id)) {
     res.status(422).send("L'id doit être un numéro");
     return;
   }
-
-  Book.findOneBook(req.params.id)
+  const bookId = parseInt(req.params.id);
+  Book.findOneBook(bookId)
     .then((book) => {
       if (book.length === 0) {
         res.status(404).send("Livre non enregristré dans cette bibliothèque");

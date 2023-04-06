@@ -7,7 +7,7 @@ const validateBorrowing = (data, forCreation = true) => {
   return Joi.object({
     userId: Joi.number().presence(presence),
     bookId: Joi.number().presence(presence),
-    deadlineDate: Joi.date().presence(presence),
+    deadlineDate: Joi.string().presence(presence),
   }).validate(data, { abortEarly: false }).error;
 };
 
