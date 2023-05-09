@@ -1,8 +1,7 @@
 const booksRouter = require("express").Router();
 const Book = require("../models/books");
-//Routes vérifiés OK ÇA MARCHE
 
-//Get all books MARCHE
+//Obtenir tous les livres enregistrés dans la bibliothèque
 booksRouter.get("/", (req, res) => {
   Book.getAllBooks()
     .then((books) => {
@@ -19,7 +18,7 @@ booksRouter.get("/", (req, res) => {
     });
 });
 
-//Get by BookId MARCHE
+//Obtenir un livre de la bibliothèque par bookId
 booksRouter.get("/:id", (req, res) => {
   if (isNaN(req.params.id)) {
     res.status(422).send("L'id doit être un numéro");
@@ -39,14 +38,12 @@ booksRouter.get("/:id", (req, res) => {
     });
 });
 
-//Post New Book MARCHE
-//On met title, autor et isFree="true";
+//Créer un nouveau livre
+//On vérifie les données et on l'ajoute à la base de données
 booksRouter.post("/", (req, res) => {
   const error = Book.validateBook(req.body);
   if (error) {
-    res
-      .status(422)
-      .send({ error: "Les données introduites ne sont pas correctes" });
+    res.status(422).send("Les données introduites ne sont pas correctes");
   } else {
     Book.addingOneBook(req.body)
       .then((createdBook) => {
@@ -58,31 +55,41 @@ booksRouter.post("/", (req, res) => {
   }
 });
 
-//Delete a book MARCHE
-//AJOUTER QUE TU PEUX PAS SUPPRIMER S'IL EST PAS FREE
+//Supprimer un livre
+//Il vérifie si le livre existe et s'il n'est pas emprunté et
+//après il le supprime de la base de données
 booksRouter.delete("/:id", (req, res) => {
-  Book.findOneBook(req.params.id).then((book) => {
-    if (book.length === 0) {
-      res.status(404).send("Livre non enregristré dans cette bibliothèque");
-      return;
-    }
-    if (book.isFree === 1) {
-      res.status(200).json(book);
-      Book.destroyBook(req.params.id)
-        .then((deleted) => {
-          if (deleted) res.status(200).send("🎉 Livre suprimé avec succès!");
-          else res.status(404).send("Livre non trouvé");
-        })
-        .catch((err) => {
-          console.log(err);
-          res.status(500).send("Error deleting a book");
-        });
-    } else {
-      res
-        .status(500)
-        .send("Le livre est emrpunté et il ne peut pas être supprimé");
-    }
-  });
+  Book.findOneBook(req.params.id)
+    .then((book) => {
+      console.log("livre trouve agargur?", book);
+      if (book.length === 0) {
+        res.status(404).send("Livre non enregristré dans cette bibliothèque");
+        console.log("livre non trouve");
+        return;
+      }
+
+      if (book.isFree === 1) {
+        console.log("livre libre trouve");
+        //res.status(200).json(book);
+        Book.destroyBook(req.params.id)
+          .then((deleted) => {
+            if (deleted) res.status(200).send("🎉 Livre suprimé avec succès!");
+            else res.status(404).send("Livre non trouvé");
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).send("Erreur pour supprimer un utilisateur");
+          });
+      } else {
+        res
+          .status(403)
+          .send("Le livre est emprunté et il ne peut pas être supprimé");
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("Error deleting a book");
+    });
 });
 
 module.exports = booksRouter;

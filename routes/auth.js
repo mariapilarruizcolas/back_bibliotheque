@@ -6,6 +6,7 @@ const {
   authenticateToken,
 } = require("../helpers/users");
 
+//Vérifier les identifiants de conexion et créer token
 authRouter.post("/login", (req, res) => {
   const { email, password } = req.body;
   const error = User.validateAuth(req.body);
@@ -24,7 +25,10 @@ authRouter.post("/login", (req, res) => {
                 token,
                 user,
               });
-            } else res.status(401).send("Invalid credentials");
+            } else
+              res.status(401).send({ error: "Identificateurs non valides" });
+
+            // res.status(401).send("Invalid credentials");
           }
         );
       }

@@ -1,8 +1,11 @@
 const Joi = require("joi");
 const argon2 = require("argon2");
 
-const connection = require("../db-config");
-const db = connection.promise();
+// const connection = require("../db-config");
+// const db = connection.promise();
+const { pool } = require("../db-config");
+
+const db = pool.promise();
 
 const hashingOptions = {
   type: argon2.argon2id,

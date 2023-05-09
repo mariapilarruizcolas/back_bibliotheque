@@ -2,6 +2,8 @@ const borrowingRouter = require("express").Router();
 const Borrowing = require("../models/borrowing");
 const User = require("../models/users");
 const Book = require("../models/books");
+
+//TO DO UN JOUR
 //Test GET userID
 //Si c'est pas un numero ou null
 //Si l'utilisateur existe pas
@@ -21,11 +23,9 @@ const Book = require("../models/books");
 //On cree la date de retour
 //On cree l'emprunt sur la table emprunts
 
-//Trouver si l'utilisateur a des emprunts a son compte
-//Get Borrowing by UserId PARFAIT
-
+//Savoir si l'utilisateur a des emprunts dans son compte
+//D'abord on cherche si l'utilisateur exist
 borrowingRouter.get("/:id", (req, res) => {
-  //On cherche si l'utilisateur exist
   User.findOneUser(req.params.id).then((userExists) => {
     if (userExists.length === 0) {
       res.status(404).send("Utilisateur non trouvé");
@@ -46,7 +46,7 @@ borrowingRouter.get("/:id", (req, res) => {
 });
 
 //Return Book
-//Verifier si le livre est dans la table d'emprunts
+//Verifier si le livre existe dans la bibliothèque
 //findOneBook
 //Si le livre existe récuperer les données de l'emprunt
 //getBorrowingByBookId
@@ -54,12 +54,7 @@ borrowingRouter.get("/:id", (req, res) => {
 //Suprimer l'emprunt
 //deleteBorrowing
 //Enlever le livre de la liste de l'user
-//TO DO
 
-//ÇA suprime le boorrowing il change  isFree
-//et il supprime de la liste d'user
-//TO DO FAIRE MARQUER LA VALEUR DE ISFREE AU RESULTAT FINAL
-//ÇA MARCHE
 borrowingRouter.put("/:bookId", (req, res) => {
   // On cherche si le livre existe
   Book.findOneBook(req.params.bookId).then((bookExists) => {
@@ -84,18 +79,15 @@ borrowingRouter.put("/:bookId", (req, res) => {
       })
       .catch((err) => {
         console.error(err);
-        res.status(500).send("Error updating a borrowing.");
+        res.status(500).send("Erreur dans le retour du livre");
       });
   });
 });
 
-//Create Borrowing ÇA MARCHE
+//Create Borrowing
 //Il valide les données d'entrée,
 // il cree un nouveau emprunt
 //il changera isFree en non
-//TO DO
-//Verifier si le livre existe et si l'user existe
-//Verifier si le livre est free
 
 borrowingRouter.post("/", (req, res) => {
   console.log(req.body);
@@ -109,15 +101,11 @@ borrowingRouter.post("/", (req, res) => {
         console.log("Livre numéro ", createdBorrowing.bookId);
         //On met le livre non disponible
         Borrowing.borrowingBook(boorrowingBookId).then((borrowingCreated) => {
-          res
-            .status(201)
-            .send(
-              `🎉 Livre emprunté avec succès. Vous devez le rendre au plus tard le ${deadlineDate}`
-            );
+          res.status(201).send("🎉 Livre emprunté avec succès.");
         });
       })
       .catch((err) => {
-        res.status(500).send("Error saving the borrowing");
+        res.status(500).send("Emprunt impossible");
       });
   }
 });

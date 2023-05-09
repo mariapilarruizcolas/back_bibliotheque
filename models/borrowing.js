@@ -1,7 +1,11 @@
-const connection = require("../db-config");
-const db = connection.promise();
+// const connection = require("../db-config");
+// const db = connection.promise();
+// const Joi = require("joi");
+const { pool } = require("../db-config");
+
 const Joi = require("joi");
 
+const db = pool.promise();
 const validateBorrowing = (data, forCreation = true) => {
   const presence = forCreation ? "required" : "optional";
   return Joi.object({

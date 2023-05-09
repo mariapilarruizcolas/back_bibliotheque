@@ -2,10 +2,6 @@ const usersRouter = require("express").Router();
 const User = require("../models/users");
 const Borrowing = require("../models/borrowing");
 
-//Toutes les routes vérifiés   OK sauf put A REFAIRE ou SUPPRIMER
-//TEST: SI L'USER EXISTE PAS, SI LES DONNEES MANQUENT,
-//SI C'EST DES NUMEROS ALORS QU'IL FAUT VARCHAR
-
 //Get All Users
 usersRouter.get("/", (req, res) => {
   User.getAllUsers()
@@ -13,7 +9,7 @@ usersRouter.get("/", (req, res) => {
       res.status(200).json(users);
     })
     .catch((err) => {
-      res.status(500).send("Error retrieving users");
+      res.status(500).send("Erreur pour retrouver l'utilisateur");
     });
 });
 
@@ -28,14 +24,18 @@ usersRouter.get("/:id", (req, res) => {
       res.status(200).json(user);
     })
     .catch((err) => {
-      res.status(500).send("Error retrieving user");
+      res.status(500).send("Utilisateur non trouvé");
     });
 });
 
 //Create a new User
+//D'abord il verifie si l'email est deja utilise
+//Apres il valide les donnees et si tout va bien
+//Il inscrit un nouveau user dans la bdd
 usersRouter.post("/", (req, res) => {
   const { email } = req.body;
   let validationErrors = null;
+
   User.findByEmail(email)
     .then((existingUserWithEmail) => {
       if (existingUserWithEmail) return Promise.reject("DUPLICATE_EMAIL");
@@ -50,18 +50,19 @@ usersRouter.post("/", (req, res) => {
       else
         res
           .status(500)
-          .send("Erreur pendant l enregistrement de l utilisateur");
+          .send("Erreur pendant l'enregistrement de l'utilisateur");
     })
     .catch((err) => {
       console.error(err);
+      console.log(res.data);
       if (err === "DUPLICATE_EMAIL")
         res.status(409).send("Cet email est déjà utilisé!");
       else if (err === "INVALID_DATA")
-        res.status(422).json({ validationErrors });
+        res.status(422).send("Tous les données sont necessaires");
       else
         res
           .status(500)
-          .send("Erreur pendant l enregistrement de l utilisateur");
+          .send("Erreur pendant l'enregistrement de l'utilisateur");
     });
 });
 
@@ -94,15 +95,17 @@ usersRouter.put("/:id", (req, res) => {
       if (err === "RECORD_NOT_FOUND")
         res.status(404).send(`User with id ${userId} not found.`);
       if (err === "DUPLICATE_EMAIL")
-        res.status(409).json({ message: "This email is already used" });
+        res.status(409).json({ message: "Cet email est déjà utilisé" });
       else if (err === "INVALID_DATA")
         res.status(422).json({ validationErrors });
-      else res.status(500).send("Error updating a user");
+      else res.status(500).send("Erreur en mettant à jour un utilisateur");
     });
 });
 
 //Delete a user
-//TO DO VERIFIER QU'IL A PAS D'EMPRUNTS EN COURS AVANT DE SUPPRIMER
+//Il cherche d'abord si l'utilisateur existe
+//Apres s'il a des emprunts
+//S'il en a pas il supprime
 
 usersRouter.delete("/:id", (req, res) => {
   User.findOneUser(req.params.id).then((user) => {
@@ -110,7 +113,6 @@ usersRouter.delete("/:id", (req, res) => {
       res
         .status(404)
         .send("Utilisateur non enregristré dans cette bibliothèque");
-      return;
     }
     Borrowing.getBorrowingByUserId(req.params.id)
       .then((borrowing) => {
@@ -127,9 +129,9 @@ usersRouter.delete("/:id", (req, res) => {
             });
         } else {
           res
-            .status(500)
+            .status(403)
             .send(
-              "L'utilisateur a des emprunts en cours et il ne peut pas être supprimé"
+              "L'utilisateur a des emprunts en cours et ne peut pas être supprimé"
             );
         }
       })
