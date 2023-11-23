@@ -1,0 +1,8 @@
+create database biblio;
+use biblio;
+
+create table books(bookId int not null auto_increment, title varchar(100) not null, author varchar(100) not null, isFree varchar(5), primary key (bookId));
+        
+create table users(userId int not null auto_increment, firsname varchar(255) not null, lastname varchar(255) not null, email varchar(255) unique not null, admin varchar(25) not null, hashpassword varchar(255) not null, primary key (userId));
+
+create table borrowing(borrowingId int primary key auto_increment not null, userId int not null, bookId int not null, deadlineDate date not null, constraint fk_userId_borrowing foreign key(userId) references users(userId), constraint fk_bookId_borrowing foreign key(bookId) references books(bookId));
