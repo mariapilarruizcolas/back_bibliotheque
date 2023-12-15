@@ -1,3 +1,6 @@
+//Exemple de requete en Postman localhost:8000/api/auth
+
+
 const authRouter = require("express").Router();
 const User = require("../models/users");
 const {
@@ -5,6 +8,7 @@ const {
   calculateJWTToken,
   authenticateToken,
 } = require("../helpers/users");
+
 
 //Vérifier les identifiants de conexion et créer token
 authRouter.post("/login", (req, res) => {

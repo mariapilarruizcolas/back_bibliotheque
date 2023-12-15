@@ -22,6 +22,7 @@ const verifyPassword = (plainPassword, hashedPassword) => {
   return argon2.verify(hashedPassword, plainPassword, hashingOptions);
 };
 
+
 const validateUser = (data, forCreation = true) => {
   const presence = forCreation ? "required" : "optional";
   return Joi.object({

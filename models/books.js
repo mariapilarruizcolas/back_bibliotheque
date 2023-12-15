@@ -31,7 +31,7 @@ const findOneBook = (id) => {
 };
 
 const addingOneBook = ({ title, author, isFree }) => {
-  // const isFreeBool = isFree === "true";
+//isFree=0 non 1 yes
   return db
     .query("INSERT INTO books (title, author, isFree) VALUES (?,?,?)", [
       title,

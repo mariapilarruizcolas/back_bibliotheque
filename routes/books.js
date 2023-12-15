@@ -1,6 +1,8 @@
 const booksRouter = require("express").Router();
 const Book = require("../models/books");
 
+//Exemple de requete en Postman localhost:8000/api/books
+
 //Obtenir tous les livres enregistrés dans la bibliothèque
 booksRouter.get("/", (req, res) => {
   Book.getAllBooks()

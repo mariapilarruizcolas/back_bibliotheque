@@ -22,9 +22,26 @@ const Book = require("../models/books");
 //On modifie la table books isFree= non
 //On cree la date de retour
 //On cree l'emprunt sur la table emprunts
+ 
+
+////////////////////
+//Get Borrowing//
+////////////////////
 
 //Savoir si l'utilisateur a des emprunts dans son compte
-//D'abord on cherche si l'utilisateur exist
+//D'abord on cherche si l'utilisateur exist: findOneUser
+//Après on cherche s'il a des emprunts: getBorrowingByUserId
+
+//ROUTE Postman: GET: http://localhost:8000/api/borrowing/:userId
+//SCHEMA de données de sortie:
+// {
+//   "title": "L'histoire interminable",
+//   "author": "Michael Ende",
+//   "deadlineDate": "2023-12-30T23:00:00.000Z",
+//   "userId": 1,
+//   "bookId": 3
+// }
+
 borrowingRouter.get("/:id", (req, res) => {
   User.findOneUser(req.params.id).then((userExists) => {
     if (userExists.length === 0) {
@@ -45,15 +62,15 @@ borrowingRouter.get("/:id", (req, res) => {
   });
 });
 
-//Return Book
-//Verifier si le livre existe dans la bibliothèque
-//findOneBook
-//Si le livre existe récuperer les données de l'emprunt
-//getBorrowingByBookId
-//Return book: mettre isFree disponible
-//Suprimer l'emprunt
-//deleteBorrowing
-//Enlever le livre de la liste de l'user
+/////////////////
+//Return Book //
+////////////////
+//ROUTE Postman: PUT : http://localhost:8000/api/borrowing/:bookId
+//Verifier si le livre existe dans la bibliothèque: findOneBook
+//Si le livre existe récuperer les données de l'emprunt: getBorrowingByBookId
+//Return book: mettre isFree disponible =1
+//Suprimer l'emprunt : deleteBorrowing
+//Enlever le livre de la liste de l'user: returnBook
 
 borrowingRouter.put("/:bookId", (req, res) => {
   // On cherche si le livre existe
@@ -83,19 +100,36 @@ borrowingRouter.put("/:bookId", (req, res) => {
       });
   });
 });
+////////////////////
+//Create Borrowing//
+////////////////////
+//Il valide les données d'entrée: validateBorrowing
+//Il vérifie que le livre est disponible: bookIsFree
+// il cree un nouveau emprunt: createOneBorrowing
+//il changera isFree en 0 non disponible: borrowingBook=>isFree=0 non et 1 yes
+//ROUTE Postman: POST : http://localhost:8000/api/borrowing
+//SCHEMA de données:
+//{  "userId": 1,=>type number
+//   "bookId": 2,=>type number
+//   "deadlineDate": "2023-12-31"=>type string
+// }
 
-//Create Borrowing
-//Il valide les données d'entrée,
-// il cree un nouveau emprunt
-//il changera isFree en non
 
 borrowingRouter.post("/", (req, res) => {
   console.log(req.body);
   const error = Borrowing.validateBorrowing(req.body);
+
   if (error) {
-    res.status(422).send("Erreur de validation des données");
+       res.status(422).send("Erreur de validation des données");
   } else {
-    Borrowing.createOneBorrowing(req.body)
+    Borrowing.bookIsFree(req.body)
+      .then(([results]) => {
+        console.log("Résultat de la requête :", results);
+
+        if (results && results.isFree == 0) {
+          res.status(404).send("Ce livre n'est pas disponible");
+        } else {
+          Borrowing.createOneBorrowing(req.body)
       .then((createdBorrowing) => {
         let boorrowingBookId = createdBorrowing.bookId;
         console.log("Livre numéro ", createdBorrowing.bookId);
@@ -103,9 +137,11 @@ borrowingRouter.post("/", (req, res) => {
         Borrowing.borrowingBook(boorrowingBookId).then((borrowingCreated) => {
           res.status(201).send("🎉 Livre emprunté avec succès.");
         });
-      })
+        }
+      )}})
       .catch((err) => {
-        res.status(500).send("Emprunt impossible");
+        console.error("Une erreur s'est produite lors de la vérification de la disponibilité du livre :", err);
+        res.status(500).send("Une erreur s'est produite lors de la vérification de la disponibilité du livre");
       });
   }
 });

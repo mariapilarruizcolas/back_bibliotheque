@@ -2,6 +2,8 @@ const usersRouter = require("express").Router();
 const User = require("../models/users");
 const Borrowing = require("../models/borrowing");
 
+//Exemple de requete en Postman localhost:8000/api/users
+
 //Get All Users
 usersRouter.get("/", (req, res) => {
   User.getAllUsers()
@@ -32,6 +34,7 @@ usersRouter.get("/:id", (req, res) => {
 //D'abord il verifie si l'email est deja utilise
 //Apres il valide les donnees et si tout va bien
 //Il inscrit un nouveau user dans la bdd
+//Route sur postman: post("http://localhost:8000/api/users"
 usersRouter.post("/", (req, res) => {
   const { email } = req.body;
   let validationErrors = null;

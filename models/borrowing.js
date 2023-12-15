@@ -14,6 +14,16 @@ const validateBorrowing = (data, forCreation = true) => {
     deadlineDate: Joi.string().presence(presence),
   }).validate(data, { abortEarly: false }).error;
 };
+const bookIsFree = ({ bookId }) => {
+  return db
+    .query(
+      "SELECT books.isFree FROM books WHERE bookId = ? ",
+      [bookId]
+    )
+    .then(([results]) => {
+      return results;
+    });
+};
 
 const createOneBorrowing = ({ userId, bookId, deadlineDate }) => {
   return db
@@ -82,4 +92,5 @@ module.exports = {
   borrowingBook,
   getBorrowingByBookId,
   deleteBorrowing,
+  bookIsFree,
 };
