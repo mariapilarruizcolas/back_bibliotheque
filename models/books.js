@@ -11,7 +11,7 @@ const validateBook = (data, forCreation = true) => {
     author: Joi.string().max(255).required(),
     //la valeur isFree doit être true ou false et
     //elle sera enregistree dans la bdd comme 0 ou 1
-    //donc 0 livre libre et 1 livre emprunte
+    //donc 0 livre emprunte et 1 livre libre
     isFree: Joi.boolean().required(),
   }).validate(data, { abortEarly: false }).error;
 };

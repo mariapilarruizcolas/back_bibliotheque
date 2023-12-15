@@ -2,8 +2,14 @@ const booksRouter = require("express").Router();
 const Book = require("../models/books");
 
 //Exemple de requete en Postman localhost:8000/api/books
-
+////////////////////
+//Get All Books//
+////////////////////
 //Obtenir tous les livres enregistrés dans la bibliothèque
+//ROUTE Postman: GET: http://localhost:8000/api/books
+
+
+
 booksRouter.get("/", (req, res) => {
   Book.getAllBooks()
     .then((books) => {
@@ -20,7 +26,12 @@ booksRouter.get("/", (req, res) => {
     });
 });
 
+////////////////////
+//Find One Book//
+////////////////////
 //Obtenir un livre de la bibliothèque par bookId
+//ROUTE Postman: GET: http://localhost:8000/api/books/:bookId
+
 booksRouter.get("/:id", (req, res) => {
   if (isNaN(req.params.id)) {
     res.status(422).send("L'id doit être un numéro");
@@ -40,8 +51,20 @@ booksRouter.get("/:id", (req, res) => {
     });
 });
 
-//Créer un nouveau livre
-//On vérifie les données et on l'ajoute à la base de données
+
+////////////////////
+//Create One Book//
+////////////////////
+//Créer un livre dans la bibliothèque 
+//ROUTE Postman: POST: http://localhost:8000/api/books/
+//Schéma de données 
+// {
+//   "title": "Anne of Avonlea", =>string
+//   "author": "Lucy Maud Montgomery", =>string
+//   "isFree": true =>boolean
+// }
+
+//On vérifie les données: validateBook et on l'ajoute à la base de données: addingOneBook
 booksRouter.post("/", (req, res) => {
   const error = Book.validateBook(req.body);
   if (error) {
@@ -57,9 +80,14 @@ booksRouter.post("/", (req, res) => {
   }
 });
 
-//Supprimer un livre
-//Il vérifie si le livre existe et s'il n'est pas emprunté et
-//après il le supprime de la base de données
+////////////////////
+//Delete One Book//
+////////////////////
+//Supprimer un livre dans la bibliothèque 
+//ROUTE Postman: DELETE: http://localhost:8000/api/books/:bookId
+
+//Il vérifie si le livre existe : findOneBook et s'il n'est pas emprunté et
+//après il le supprime de la base de données : destroyBook
 booksRouter.delete("/:id", (req, res) => {
   Book.findOneBook(req.params.id)
     .then((book) => {
@@ -70,12 +98,12 @@ booksRouter.delete("/:id", (req, res) => {
         return;
       }
 
-      if (book.isFree === 1) {
+      if (book.isFree == 1) {
         console.log("livre libre trouve");
         //res.status(200).json(book);
         Book.destroyBook(req.params.id)
           .then((deleted) => {
-            if (deleted) res.status(200).send("🎉 Livre suprimé avec succès!");
+            if (deleted) res.status(200).send("🎉 Livre supprimé avec succès!");
             else res.status(404).send("Livre non trouvé");
           })
           .catch((err) => {

@@ -2,26 +2,20 @@ const borrowingRouter = require("express").Router();
 const Borrowing = require("../models/borrowing");
 const User = require("../models/users");
 const Book = require("../models/books");
-
+////////////////
 //TO DO UN JOUR
-//Test GET userID
+////////////////
+//TEST GET userID
+
 //Si c'est pas un numero ou null
 //Si l'utilisateur existe pas
 //Si l'utilisateur a pas d'emprunts
 //Si l'utilisateur a de plusieurs emprunts
 
 //ROUTE  GET userID==> savoir si un user a des emprunts
-//Si l'utilisateur existe on regarde
-
 //ROUTE  PUT bookID==>//rendre un livre
-//Si le book existe et il est dans la liste d'emprunts
-//On modifie la table books isFree= yes
-//On supprime l'emprunt
 //ROUTE  POST bookID==>emprunter un livre
-//Si le book existe et l'user existe
-//On modifie la table books isFree= non
-//On cree la date de retour
-//On cree l'emprunt sur la table emprunts
+
  
 
 ////////////////////
